@@ -22,6 +22,7 @@
 
 int send_intent(struct su_initiator *from, struct su_request *to, const char *socket_path, int allow, int type)
 {
+    pid_t child_pid;
     char command[PATH_MAX];
     char action[PATH_MAX];
     if (type == 0) {
@@ -75,5 +76,17 @@ int send_intent(struct su_initiator *from, struct su_request *to, const char *so
     setenv("LD_LIBRARY_PATH", "/vendor/lib:/system/lib", 1);
     setresgid(0, 0, 0);
     setresuid(0, 0, 0);
-    return system(command);
+    if (type == 0) {
+        return system(command);
+    } else {
+        child_pid = fork();
+        if (child_pid >= 0) {
+            if (child_pid == 0) {
+                return execl("/system/bin/sh", "sh", "-c", command, (char*)NULL);
+            } else {
+                return 0;
+            }
+        }
+        return -1;
+    }
 }
