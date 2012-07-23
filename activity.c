@@ -16,6 +16,8 @@
 */
 
 #include <unistd.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 #include "su.h"
 #include "utils.h"
@@ -77,7 +79,7 @@ int send_intent(struct su_initiator *from, struct su_request *to, const char *so
     setresgid(0, 0, 0);
     setresuid(0, 0, 0);
     if (type == 0) {
-        return system(command);
+        return system_nosh(command);
     } else {
         child_pid = fork();
         if (child_pid >= 0) {
